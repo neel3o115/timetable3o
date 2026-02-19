@@ -1,63 +1,49 @@
-# Use Case Diagram — Timetable3o
+# Use Case Diagram
 
-![Use Case Diagram](diagrams/useCaseDiagram.png)
+```mermaid
+flowchart LR
+    U[Admin / User]
 
-## Actors
+    UC1((Create draft))
+    UC2((Add subjects, teachers, rooms))
+    UC3((Define constraints))
+    UC4((Manually assign timetable))
+    UC5((Auto-generate timetable))
+    UC6((Edit timetable))
+    UC7((Save timetable))
+    UC8((Share timetable))
+    UC9((View shared timetable))
 
-* Visitor (unregistered user)
-* Registered User
-* System (AI + Solver components)
-* External Services (Google Calendar / Google Sheets)
+    U --> UC1
+    U --> UC2
+    U --> UC3
+    U --> UC4
+    U --> UC5
+    U --> UC6
+    U --> UC7
+    U --> UC8
+    U --> UC9
 
----
+    UC1 --> UC2
+    UC2 --> UC3
+    UC3 --> UC5
+    UC5 --> UC6
+    UC4 --> UC6
+    UC6 --> UC7
+    UC7 --> UC8
+```
 
-## Visitor Use Cases
+## Summary
+Primary actor:
+- Admin / User
 
-* Open platform
-* Create timetable session
-* Provide scheduling constraints via chat interface
-* View generated timetable
-* Modify constraints and regenerate timetable
-* Access shared timetable links
-
-Visitors can interact with the system without creating an account, but their timetables are not permanently stored.
-
----
-
-## Registered User Use Cases
-
-* Sign in using Google account
-* Create and manage timetables
-* Regenerate timetables with updated constraints
-* Save timetables
-* Share timetable via public link
-* Export timetable to Google Calendar
-* Export timetable to Google Sheets
-* View previously created timetables
-
-Registered users have additional persistence and export capabilities.
-
----
-
-## System Use Cases
-
-* Extract structured constraints from user input
-* Validate constraint completeness
-* Invoke timetable solver
-* Generate timetable if feasible
-* Detect and report conflicts if infeasible
-* Render timetable in calendar-style view
-* Validate manual modifications (future feature)
-
----
-
-## External Service Use Cases
-
-* Receive timetable data for export
-* Create calendar events or spreadsheet entries
-
----
-
-## Notes
-
-The system is designed to support both anonymous usage for quick timetable generation and authenticated usage for saving, exporting, and sharing schedules.
+Main use cases:
+- create a new draft
+- add timetable entities such as subjects, teachers, sections, and rooms
+- define scheduling constraints
+- build timetable manually in the grid
+- auto-generate timetable using solver
+- edit generated or manual timetable
+- save timetable state
+- publish/share timetable by link
+- view a shared timetable in read-only mode

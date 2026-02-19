@@ -1,92 +1,60 @@
-# Sequence Diagram — Timetable3o
+# Sequence Diagram
 
 ```mermaid
 sequenceDiagram
-actor User
-participant Frontend
-participant Backend
-participant AI
-participant Solver
+    actor User
+    participant FE as React Frontend
+    participant API as Express Route
+    participant C as DraftController
+    participant S as DraftService
+    participant V as DraftValidator
+    participant R as DraftRepository
+    participant DB as MongoDB
+    participant SS as SolverService
+    participant PY as Python CP-SAT Solver
 
-User->>Frontend: Start timetable creation
-User->>Frontend: Provide constraints
-Frontend->>Backend: Send input
-Backend->>AI: Extract constraints
-AI-->>Backend: Structured constraints
-Backend->>Solver: Generate timetable
+    User->>FE: Create draft
+    FE->>API: POST /draft
+    API->>C: createDraft(req, res)
+    C->>S: createDraft(userId, payload)
+    S->>V: validateForSave(draft)
+    V-->>S: validation result
+    S->>R: create(data)
+    R->>DB: insert Draft
+    DB-->>R: draft document
+    R-->>S: draft
+    S-->>C: draft
+    C-->>FE: 201 draft response
 
-alt Feasible solution
-Solver-->>Backend: Timetable
-Backend-->>Frontend: Timetable data
-Frontend-->>User: Display timetable
-else No feasible solution
-Solver-->>Backend: Conflict details
-Backend->>AI: Explain conflicts
-AI-->>Frontend: Suggestions
-Frontend-->>User: Show feedback
-end
+    User->>FE: Add subjects, rooms, teachers, sections, slots
+    FE->>API: PATCH /draft/:id
+    API->>C: updateDraft(req, res)
+    C->>S: updateDraft(id, updates)
+    S->>R: findById(id)
+    R->>DB: fetch Draft
+    DB-->>R: draft
+    R-->>S: draft
+    S->>V: validateForSave(updatedDraft)
+    V-->>S: validation result
+    S->>DB: save draft
+    S-->>C: updated draft
+    C-->>FE: updated draft response
+
+    User->>FE: Click Solve
+    FE->>API: POST /draft/:id/solve
+    API->>C: solveDraft(req, res)
+    C->>S: solveDraft(id)
+    S->>R: findById(id)
+    R->>DB: fetch Draft
+    DB-->>R: draft
+    R-->>S: draft
+    S->>V: validateForSolve(draft)
+    V-->>S: validation result
+    S->>SS: runSolver(draft)
+    SS->>PY: execute solver.py with solver input
+    PY-->>SS: timetable result
+    SS-->>S: POSSIBLE / NOT_POSSIBLE + timetable
+    S-->>C: result + metadata
+    C-->>FE: solve response
+    FE->>FE: Render timetable grid
 ```
-
-## Scenario: Timetable Generation Flow
-
-This diagram represents the interaction between the user, system components, and external services during timetable creation.
-
----
-
-## Actors / Components
-
-* User (Visitor or Registered User)
-* Frontend Interface (Chat + Timetable View)
-* Backend Server
-* AI Component (Constraint Extraction)
-* Solver Service (Constraint Solver using OR-Tools)
-* Export Services (Google Calendar / Google Sheets — optional)
-
----
-
-## Main Flow (Feasible Timetable)
-
-1. User opens the platform and starts timetable creation.
-2. User provides scheduling requirements through the chat interface.
-3. Frontend sends user input to the backend.
-4. Backend forwards input to the AI component.
-5. AI extracts structured constraints from the input.
-6. Extracted constraints are returned to the backend.
-7. Backend sends constraints to the solver service.
-8. Solver attempts to generate a valid timetable.
-9. Solver returns a feasible timetable.
-10. Backend stores (if user is authenticated) and forwards the result to the frontend.
-11. Frontend renders the timetable in a calendar-style layout.
-12. User views the generated timetable.
-
----
-
-## Alternative Flow (No Feasible Solution)
-
-If the solver cannot generate a valid timetable:
-
-1. Solver returns failure information and conflicting constraints.
-2. Backend forwards this information to the AI component.
-3. AI generates an explanation or suggestions for relaxing constraints.
-4. Frontend displays the feedback in the chat interface.
-5. User modifies constraints and resubmits.
-
----
-
-## Optional Actions After Generation
-
-If the user is authenticated:
-
-* Save timetable
-* Share timetable via public link
-* Export timetable to Google Calendar
-* Export timetable to Google Sheets
-
-Export actions involve sending timetable data to the respective external services.
-
----
-
-## Notes
-
-The system supports iterative interaction, allowing users to refine constraints until a feasible timetable is produced.
-

@@ -1,59 +1,62 @@
-# Timetable3o — AI-Assisted Timetable Generation Platform 
+# Timetable3o
 
-## Overview
+## Project Title
+Timetable3o - Constraint-Based Academic Timetable Generator
 
-Timetable3o is a personal project idea for a web-based system that generates academic timetables from user-provided constraints. The core concept is to combine a conversational interface for collecting requirements with a constraint solver that attempts to construct a valid schedule.
+## Problem Statement
+Creating academic timetables manually is difficult, repetitive, and error-prone. Administrators must balance sections, subjects, teachers, rooms, and time slots while avoiding conflicts such as double-booked teachers, invalid room usage, or overloaded sections. As the number of sections and constraints grows, manual scheduling becomes slow and unreliable.
 
-The project explores how timetable generation can be treated as a constraint satisfaction problem and how users can iteratively refine inputs when conflicts arise.
+## Solution Overview
+Timetable3o solves this problem with a hybrid workflow:
+- users first define timetable data in a structured draft
+- the system validates constraints before scheduling
+- a CP-SAT based solver generates a valid timetable automatically
+- users can then refine the timetable through the manual builder in the frontend
 
----
+This combines deterministic optimization with practical manual control.
 
-## Core Idea
+## Scope
+The system supports:
+- multi-section scheduling
+- teacher assignment and teacher conflict avoidance
+- room assignment and room-type constraints
+- time-slot based timetable generation
+- manual override and interactive timetable editing
+- publishing timetables via shareable links
+- planned export integration for Google Sheets and Google Calendar
 
-A user visits the platform and chooses to create a timetable. The interface presents two main sections:
+## Key Features
+- Draft-based workflow for structured timetable creation
+- Constraint validation before solve
+- CP-SAT solver using Google OR-Tools
+- Manual timetable builder for editing and placement
+- Shareable published timetable links
+- Clean backend architecture using OOP and separation of concerns
 
-* A chat-style panel where the user describes scheduling requirements
-* A timetable view where the generated schedule is displayed
+## Tech Stack
+### Frontend
+- React
+- TypeScript
+- Tailwind CSS
+- Vite
 
-The chat component is intended to extract structured constraints such as subjects, available time slots, faculty availability, room limits, or other restrictions.
+### Backend
+- Node.js
+- Express
+- MongoDB with Mongoose
+- OOP backend architecture: Route -> Controller -> Service -> Repository -> Model
 
----
+### Solver
+- Python
+- Google OR-Tools CP-SAT
 
-## Timetable Generation
+## Architecture Note
+The backend has been refactored into a clean OOP structure with:
+- Controllers for HTTP request/response handling
+- Services for business logic
+- Repositories for database access
+- Models for MongoDB persistence
+- SolverService for solver execution
+- Validator classes for draft validation
 
-The extracted constraints are passed to a backend solver (e.g., using constraint programming tools such as OR-Tools). The solver attempts to produce a timetable that satisfies all constraints.
-
-Two outcomes are possible:
-
-* A valid timetable is generated
-* No feasible timetable exists for the given constraints
-
-If generation fails, the system returns information about conflicts so the user can adjust requirements and try again.
-
----
-
-## Visualization
-
-When a valid solution is found, the timetable is displayed in a calendar-like grid with sessions represented as time-slot blocks.
-
-Future enhancements may allow manual adjustments (e.g., drag-and-drop), followed by validation to ensure constraints are not violated.
-
----
-
-## Export and Sharing
-
-Users who sign in (e.g., via Google authentication) may export generated timetables to services such as Google Calendar or Google Sheets. The platform may also allow sharing timetables through public links so that non-registered users can view them.
-
----
-
-## Scope of Exploration
-
-The project focuses on:
-
-* Constraint collection
-* Automated timetable generation
-* Conflict reporting
-* Visual schedule representation
-* Basic export and sharing features
-
-Additional features may be explored later depending on time and feasibility.
+This structure improves maintainability, testability, and separation of concerns while preserving existing APIs and behavior.
