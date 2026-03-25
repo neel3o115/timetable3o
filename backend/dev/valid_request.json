@@ -1,0 +1,23 @@
+{
+  "extracted_constraints": {
+    "days": ["Mon","Tue"],
+    "time_slots": ["9-10","10-11"],
+    "sections": ["A","B"],
+    "subjects": {
+      "Maths": {
+        "lectures_per_week": 2,
+        "labs_per_week": 1
+      }
+    },
+    "teachers": {
+      "T1": {
+        "teaches": ["Maths"],
+        "availability": { "type": "full" }
+      }
+    },
+    "rooms": {
+      "lecture": 2,
+      "lab": 1
+    }
+  }
+}
