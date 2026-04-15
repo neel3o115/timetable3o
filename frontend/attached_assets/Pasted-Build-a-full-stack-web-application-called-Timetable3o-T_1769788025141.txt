@@ -1,0 +1,135 @@
+Build a full-stack web application called “Timetable3o”.
+
+Timetable3o is an AI-powered timetable generator with a chat-first interface and a visual drag-and-drop editor.
+
+========================
+CORE IDEA
+========================
+Users should be able to talk to an AI in natural language, describe their timetable requirements and constraints, and get:
+1) A clear answer on whether a valid timetable is possible
+2) An explanation if it is NOT possible
+3) Negotiation with the AI to relax constraints
+4) A final generated timetable shown visually
+5) A drag-and-drop interface to manually tweak the timetable
+
+========================
+USER FLOW
+========================
+1) Landing Page
+   - Clean, modern, minimal UI
+   - Short explanation of what Timetable3o does
+   - “Get Started” button
+
+2) Chat Interface (Primary UX)
+   - Looks like a friendly AI chat (similar to ChatGPT)
+   - AI asks questions step-by-step, not all at once
+   - User can answer in any order using natural language
+   - AI extracts constraints from conversation
+
+   Example constraints:
+   - days, time slots
+   - sections/classes
+   - subjects with lecture/lab counts
+   - teachers and what they teach
+   - room limits
+   - hard vs soft rules (e.g., labs after lectures)
+
+3) Constraint Reasoning
+   - AI decides which constraints are HARD vs SOFT
+   - AI never invents constraints
+   - If timetable is impossible:
+       • Clearly explain why
+       • Show which rules conflict
+       • Suggest minimal changes
+       • Ask user for permission before relaxing anything
+
+4) Solver Integration
+   - AI converts constraints into a structured JSON format
+   - JSON is sent to a Python constraint solver (OR-Tools / CP-SAT)
+   - Solver returns:
+       • POSSIBLE + timetable
+       • or NOT_POSSIBLE + reason
+
+5) Timetable View
+   - Grid layout: Days × Time Slots × Sections
+   - Clearly show subject, lecture/lab, and teacher
+   - Empty slots visible
+
+6) Drag & Drop Editor
+   - Users can drag classes between slots
+   - If a move breaks a hard constraint:
+       • Show an error message
+       • Revert the move
+   - Soft constraints can be violated but highlighted
+
+7) Sharing
+   - Read-only shareable link
+   - Exportable JSON (future: Google Calendar)
+
+========================
+AI REQUIREMENTS
+========================
+- Use Google Gemini API
+- AI is responsible ONLY for:
+  - understanding natural language
+  - extracting constraints
+  - negotiating constraints
+- AI must NOT invent data
+- AI must output strict JSON when asked
+- AI must explain failures in simple language
+
+========================
+SOLVER REQUIREMENTS
+========================
+- Python solver using OR-Tools CP-SAT
+- Modular constraint system
+- Each constraint is a function that can be enabled/disabled
+- Solver must return:
+  {
+    status: POSSIBLE | NOT_POSSIBLE,
+    timetable OR explanation
+  }
+
+========================
+TECH STACK
+========================
+Frontend:
+- React
+- Modern UI (soft colors, rounded cards, smooth transitions)
+- Drag and drop support
+
+Backend:
+- Node.js (Express)
+- Bridge to Python solver
+- Gemini API integration
+
+Python:
+- OR-Tools CP-SAT
+- Clean, readable constraint model
+
+========================
+DESIGN STYLE
+========================
+- Visually appealing
+- Calm colors (not too bright)
+- Feels like a real product, not a college project
+- Friendly tone (no robotic language)
+
+========================
+IMPORTANT BEHAVIOR RULES
+========================
+- Always prefer correctness over filling the timetable
+- If impossible, explain why instead of forcing output
+- Never silently relax constraints
+- Always ask before changing rules
+- Keep UX simple and conversational
+
+========================
+FINAL GOAL
+========================
+The project should feel like:
+“Talking to a smart assistant that actually understands scheduling
+and helps you reason about your constraints.”
+
+Build the full project structure and starter implementation.
+Focus on correctness, clarity, and extensibility.

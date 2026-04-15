@@ -1,0 +1,5 @@
+node_modules
+dist
+client/.env
+client/.env.local
+client/.env.production.local
